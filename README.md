@@ -1,5 +1,5 @@
 # AI MCQ Marker Web App
-
+i had a small issue with some git accounts birelles acount wwas clashing thats why you are seeing 2 contibutors i am the only contributor i resolved the conflict
 
 
 This is a web application that uses AI-powered Optical Character Recognition (OCR) to automatically grade multiple-choice (MCQ) answer sheets uploaded as images. The app is built using **FastAPI**, **Jinja2**, and **Pytesseract**.
