@@ -54,41 +54,28 @@ a {
 }
 
 </style>
-
 <body>
-  <h1>Upload Answer Sheet using AI</h1>
+  <h1>Upload Answer Sheet</h1>
   <form action="/upload_image" method="post" enctype="multipart/form-data">
-    <label>Student Name:</label>
-    <input type="text" name="name" required><br/>
-  
-    <label>Subject:</label>
-    <input type="text" name="subject" required><br/>
-  
-    <label>Image File:</label><br/>
-    <input type="file" name="file" accept="image/*" required><br/><br/>
-  
-    <label>Points for Correct:</label>
-    <input type="number" name="correct_points" step="any" value="1"><br/>
-  
-    <label>Points for Wrong:</label>
-    <input type="number" name="wrong_points" step="any" value="-0.25"><br/>
-  
-    <label>Points for Blank:</label>
-    <input type="number" name="blank_points" step="any" value="0"><br/>
-  
+    <input type="text" name="name" placeholder="Student Name" required>
+    <input type="text" name="subject" placeholder="Subject" required>
+    <input type="file" name="file" accept="image/*" required>
+    <input type="number" name="correct_points" step="any" value="1">
+    <input type="number" name="wrong_points" step="any" value="-0.25">
+    <input type="number" name="blank_points" step="any" value="0">
     <button type="submit">Mark</button>
   </form>
-  
+
   {% if score is defined %}
+    <h2>Student: {{ student }}</h2>
+    <h3>Subject: {{ subject }}</h3>
     <h2>Score: {{ score }}</h2>
-    <h3>Details:</h3>
     <ul>
       {% for item in details %}
         <li>Q{{ item.q }}: {{ item.status }}</li>
       {% endfor %}
     </ul>
-    <a href="/download_pdf?path={{ pdf_path }}">Download Result (PDF)</a>
+    <a href="/download_pdf?path={{ pdf_path }}">Download PDF</a>
   {% endif %}
 </body>
 </html>
-

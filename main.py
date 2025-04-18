@@ -1,5 +1,4 @@
 import os
-import sys
 import uuid
 import json
 import shutil
@@ -8,21 +7,20 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-
-# Optional: only use if still running from /app directory
-# sys.path.append(os.path.dirname(os.path.dirname(__file__)))
-
-# Local imports
 from app.pdf_generator import generate_result_pdf
 from app.ocr import extract_answers_from_image
 from app.scorer import score_answers
 
-# Setup
 BASE_DIR = os.path.dirname(__file__)
-templates = Jinja2Templates(directory="app/templates")
+TEMPLATES_DIR = os.path.join(BASE_DIR, "templates")
+
+
+STATIC_DIR = os.path.join(BASE_DIR, "static")
+TEMP_DIR = os.path.join(BASE_DIR, "temp")
+os.makedirs(STATIC_DIR, exist_ok=True)
+os.makedirs(TEMP_DIR, exist_ok=True)
 
 app = FastAPI()
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -31,10 +29,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Serve static files (CSS, JS)
-app.mount("/static", StaticFiles(directory="app/static"), name="static")
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+templates = Jinja2Templates(directory=TEMPLATES_DIR)
 
-# Load answer key
 with open(os.path.join(BASE_DIR, "correct_answers.json")) as f:
     correct_answers = json.load(f)
 
@@ -52,8 +49,7 @@ async def upload_image(
     blank_points: float = Form(...),
     file: UploadFile = File(...)
 ):
-    os.makedirs("temp", exist_ok=True)
-    temp_path = f"temp/{uuid.uuid4()}_{file.filename}"
+    temp_path = os.path.join(TEMP_DIR, f"{uuid.uuid4()}_{file.filename}")
     with open(temp_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
@@ -71,4 +67,22 @@ async def upload_image(
 
     pdf_path = generate_result_pdf(result_data)
 
-    return templates
+    return templates.TemplateResponse("index.html", {
+        "request": request,
+        "score": result_data["score"],
+        "details": result_data["details"],
+        "ocr_answers": extracted_answers,
+        "student": name,
+        "subject": subject,
+        "pdf_path": pdf_path
+    })
+
+@app.get("/download_pdf")
+async def download_pdf(path: str):
+    if os.path.exists(path):
+        return FileResponse(path, media_type='application/pdf', filename=os.path.basename(path))
+    return {"error": "PDF not found"}
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
