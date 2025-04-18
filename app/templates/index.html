@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AI MCQ Marker</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<style>
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: #f8f9fa;
+    padding: 2rem;
+    color: #333;
+}
+
+h1, h2, h3 {
+    color: #2c3e50;
+}
+
+form {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    max-width: 500px;
+    margin: auto;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="file"] {
+    width: 100%;
+    padding: 0.6rem;
+    margin: 0.5rem 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+button {
+    background: #3498db;
+    color: white;
+    padding: 0.7rem 1.5rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #2980b9;
+}
+
+a {
+    color: #2c3e50;
+    text-decoration: underline;
+}
+
+</style>
+
+<body>
+  <h1>Upload Answer Sheet using AI</h1>
+  <form action="/upload_image" method="post" enctype="multipart/form-data">
+    <label>Student Name:</label>
+    <input type="text" name="name" required><br/>
+  
+    <label>Subject:</label>
+    <input type="text" name="subject" required><br/>
+  
+    <label>Image File:</label><br/>
+    <input type="file" name="file" accept="image/*" required><br/><br/>
+  
+    <label>Points for Correct:</label>
+    <input type="number" name="correct_points" step="any" value="1"><br/>
+  
+    <label>Points for Wrong:</label>
+    <input type="number" name="wrong_points" step="any" value="-0.25"><br/>
+  
+    <label>Points for Blank:</label>
+    <input type="number" name="blank_points" step="any" value="0"><br/>
+  
+    <button type="submit">Mark</button>
+  </form>
+  
+  {% if score is defined %}
+    <h2>Score: {{ score }}</h2>
+    <h3>Details:</h3>
+    <ul>
+      {% for item in details %}
+        <li>Q{{ item.q }}: {{ item.status }}</li>
+      {% endfor %}
+    </ul>
+    <a href="/download_pdf?path={{ pdf_path }}">Download Result (PDF)</a>
+  {% endif %}
+</body>
+</html>
+

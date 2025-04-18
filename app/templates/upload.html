@@ -1,0 +1,15 @@
+{% comment %} <!-- app/templates/upload.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="/static/styles.css">
+    <title>Upload MCQ Sheet</title>
+</head>
+<body>
+    <h1>Upload MCQ Answer Sheet Image</h1>
+    <form action="/upload_image" method="post" enctype="multipart/form-data">
+        <input type="file" name="file">
+        <button type="submit">Upload and Extract Answers</button>
+    </form>
+</body>
+</html> {% endcomment %}
